@@ -149,3 +149,42 @@ Use `SKILL.md` for the main workflow and open the reference file that matches th
 - `references/manipulation.md`: Filtering and transformation workflows.
 - `references/concatenation.md`: Combining datasets.
 - `references/best_practices.md`: Reliability and performance guidance.
+
+## Practical Data Workflow
+
+Use a consistent sequence when working with an AnnData object:
+
+1. **Inspect first.** Record dimensions, index names, matrix representation, metadata columns, layers, embeddings, and any raw snapshot.
+2. **Validate identity.** Confirm observation and variable identifiers, uniqueness requirements, and alignment between metadata and matrix rows or columns.
+3. **Choose the storage strategy.** Decide whether in-memory, backed, sparse, dense, or chunked access is appropriate for the operation and dataset size.
+4. **Make transformations explicit.** Document filtering, normalization, concatenation, renaming, and type conversion with their parameters.
+5. **Preserve required state.** Keep raw data or source snapshots only when there is a defined downstream requirement.
+6. **Validate the result.** Recheck dimensions, indices, metadata, matrix representation, and expected values after important transformations.
+7. **Save and reopen.** Confirm that the serialized output can be read and still contains the information needed by downstream tools.
+
+## Supporting Resources
+
+| Resource | Purpose |
+|---|---|
+| [Dataset intake and provenance template](resources/dataset-intake-and-provenance-template.md) | Capture experimental context, AnnData components, schema, and processing history. |
+| [Concatenation validation checklist](resources/concatenation-validation-checklist.md) | Check joins, labels, metadata alignment, dimensions, and output integrity. |
+| [Large-dataset memory planning guide](resources/large-dataset-memory-planning.md) | Estimate memory requirements and choose in-memory, backed, sparse, or chunked workflows. |
+| [Data structure reference](references/data_structure.md) | Understand X, obs, var, layers, multidimensional annotations, pairwise matrices, uns, and raw. |
+| [I/O operations reference](references/io_operations.md) | Review supported storage formats, reading, writing, and backed access. |
+| [Manipulation reference](references/manipulation.md) | Review slicing, views, copies, indexing, and transformation patterns. |
+| [Concatenation reference](references/concatenation.md) | Review join, merge, labels, and large-scale concatenation behavior. |
+| [Best practices reference](references/best_practices.md) | Review memory, metadata, and reproducibility practices. |
+
+## Data Integrity Rules
+
+Keep observation and variable metadata aligned to their corresponding indexes. When joining external metadata, align by identifiers rather than assuming row order. After concatenation, verify that the resulting labels and variable definitions match the intended study design. An outer join can introduce missing values, while an inner join can remove variables, so record the choice and inspect the result.
+
+A concatenated object is not automatically batch-corrected or biologically harmonized. Preserve batch and sample identity, then evaluate integration or correction as a distinct analytical step.
+
+## Memory-Safety Guidance
+
+Avoid unnecessary dense conversions and full-object copies. Use backed access for appropriate read-heavy workflows, while recognizing that some operations require data to be materialized in memory. A view is not the same as an independent copy. Before modifying a subset, make the copy behavior explicit and test that the source object remains unchanged where that is required.
+
+## Reproducible Handoff
+
+A useful handoff records the input dataset identity, dimensions, observation and variable identifiers, package versions, transformation sequence, parameters, output format, and validation results. Include a brief note describing which annotations, layers, embeddings, and raw data were preserved or intentionally omitted.
